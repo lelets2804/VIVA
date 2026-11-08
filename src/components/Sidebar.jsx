@@ -18,7 +18,7 @@ export default function Sidebar({ theme, toggleTheme }) {
       animate={{ width: open ? 240 : 80 }} transition={{ type: "spring", stiffness: 300, damping: 30 }} className="sticky top-0 hidden md:flex h-screen shrink-0 flex-col gap-2 overflow-hidden border-r border-silver/40 bg-pearl-light p-4 dark:bg-forest/60">
       <div className="mb-6 flex items-center justify-between">
         {open && (
-          <span className="text-2xl font-bold text-silver-metal">VIVA</span> )}
+          <span className="text-2xl font-bold text-silver-metal">VIVVA</span> )}
         <button onClick={() => setOpen(!open)} aria-label={open ? "Recolher menu" : "Expandir menu"} aria-expanded={open} className="rounded-lg p-2 hover:bg-sage/30">
           {open ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
         </button>
