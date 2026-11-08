@@ -1,10 +1,56 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
-  --color-midnight: #101D2A;
-  --color-deep-teal: #173B43;
-  --color-viva: #20C9A5;
-  --color-mint: #9AEAD5;
+  --color-moss: #0F1A17;
+  --color-forest: #1D3A33;
+  --color-sage: #8FD6A4;
+  --color-violet-glow: #7C6CFF;
+  --color-pearl: #CFE4D5;
+  --color-pearl-light: #E6F3E9;
   --color-silver: #C0C7CE;
-  --color-cloud: #F2F7F5;
+}
+
+/* Tema claro: aço escuro, legível sobre o Pearl */
+:root {
+  --metal-text: linear-gradient(
+    135deg,
+    #2b3238 0%,
+    #5c646c 30%,
+    #39414a 55%,
+    #6a727a 75%,
+    #2b3238 100%
+  );
+}
+
+/* Tema escuro: prata clara com reflexo */
+.dark {
+  --metal-text: linear-gradient(
+    135deg,
+    #8a929a 0%,
+    #e6eaed 25%,
+    #c0c7ce 50%,
+    #7e868e 70%,
+    #d9dee2 100%
+  );
+}
+
+@utility text-silver-metal {
+  background-image: var(--metal-text);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+@utility bg-silver-metal {
+  background-image: linear-gradient(
+    135deg,
+    #8a929a 0%,
+    #e6eaed 22%,
+    #c0c7ce 45%,
+    #7e868e 62%,
+    #d9dee2 82%,
+    #a3abb3 100%
+  );
 }

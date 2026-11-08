@@ -1,7 +1,22 @@
+import { Routes, Route } from "react-router-dom";
+import useTheme from "./hooks/useTheme";
+import Layout from "./components/Layout";
+import Dashboard from "./pages/Dashboard";
+import Rotina from "./pages/Rotina";
+import Seguranca from "./pages/Seguranca";
+import Mobilidade from "./pages/Mobilidade";
+
 export default function App() {
+  const { theme, toggleTheme } = useTheme();
+
   return (
-    <div className="min-h-screen bg-midnight flex items-center justify-center">
-      <h1 className="text-5xl font-bold text-viva">VIVA</h1>
-    </div>
+    <Routes>
+      <Route element={<Layout theme={theme} toggleTheme={toggleTheme} />}>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/rotina" element={<Rotina />} />
+        <Route path="/seguranca" element={<Seguranca />} />
+        <Route path="/mobilidade" element={<Mobilidade />} />
+      </Route>
+    </Routes>
   );
 }
