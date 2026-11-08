@@ -15,7 +15,7 @@ export default function Sidebar({ theme, toggleTheme }) {
 
   return (
     <motion.aside
-      animate={{ width: open ? 240 : 80 }} transition={{ type: "spring", stiffness: 300, damping: 30 }} className="sticky top-0 flex h-screen shrink-0 flex-col gap-2 overflow-hidden border-r border-silver/40 bg-pearl-light p-4 dark:bg-forest/60">
+      animate={{ width: open ? 240 : 80 }} transition={{ type: "spring", stiffness: 300, damping: 30 }} className="sticky top-0 hidden md:flex h-screen shrink-0 flex-col gap-2 overflow-hidden border-r border-silver/40 bg-pearl-light p-4 dark:bg-forest/60">
       <div className="mb-6 flex items-center justify-between">
         {open && (
           <span className="text-2xl font-bold text-silver-metal">VIVA</span> )}
