@@ -54,3 +54,14 @@
     #a3abb3 100%
   );
 }
+
+@utility fade-edges {
+  --fade: linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%), linear-gradient(to bottom, transparent 0%, #000 18%, #000 82%, transparent 100%);
+  mask-image: var(--fade);
+  -webkit-mask-image: var(--fade);
+  mask-composite: intersect;
+  -webkit-mask-composite: source-in;
+  @media (min-width: 768px) {
+    --fade: linear-gradient(to right, transparent 0%, #000 42%, #000 88%, transparent 100%), linear-gradient(to bottom, transparent 0%, #000 18%, #000 82%, transparent 100%);
+  }
+}
