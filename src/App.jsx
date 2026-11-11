@@ -6,6 +6,8 @@ import Dashboard from "./pages/Dashboard";
 import Rotina from "./pages/Rotina";
 import Seguranca from "./pages/Seguranca";
 import Mobilidade from "./pages/Mobilidade";
+import Insights from "./pages/Insights";
+import Assistente from "./pages/Assistente";
 
 export default function App() {
   const { theme, toggleTheme } = useTheme();
@@ -17,6 +19,8 @@ export default function App() {
           <Route path="/rotina" element={<Rotina />} />
           <Route path="/seguranca" element={<Seguranca />} />
           <Route path="/mobilidade" element={<Mobilidade />} />
+          <Route path="/insights" element={<Insights />} />
+          <Route path="/assistente" element={<Assistente />} />
         </Route>
       </Routes>
     </CenaProvider>

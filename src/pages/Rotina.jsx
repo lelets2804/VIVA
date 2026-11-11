@@ -8,6 +8,7 @@ import LembreteCard from "../components/LembreteCard";
 import LembreteModal from "../components/LembreteModal";
 import ProgressRing from "../components/ProgressRing";
 import RajadaParticulas from "../components/RajadaParticulas";
+import TituloPagina from "../components/TituloPagina";
 
 const FILTROS = [{ id: "todos", nome: "Todos" }, { id: "pendentes", nome: "Pendentes" }, { id: "concluidos", nome: "Concluídos" }];
 
@@ -25,7 +26,7 @@ export default function Rotina() {
   return (
     <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-5xl">
       <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
-        <div><h1 className="text-4xl font-bold text-silver-metal md:text-5xl">Rotina</h1><p className="mt-2 opacity-80">Seus lembretes e tarefas do dia.</p></div>
+        <TituloPagina sub="Seus lembretes e tarefas do dia.">Rotina</TituloPagina>
         <button onClick={() => setModal({})} className="flex items-center gap-2 rounded-xl bg-sage px-5 py-3 font-semibold text-moss transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-violet-glow"><Plus size={20} />Novo lembrete</button>
       </header>
       <div className="grid gap-8 md:grid-cols-[auto_1fr]">

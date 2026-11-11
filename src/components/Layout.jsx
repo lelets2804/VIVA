@@ -17,7 +17,7 @@ export default function Layout({ theme, toggleTheme }) {
       <div aria-hidden="true" className="fixed inset-0 z-0 bg-pearl dark:bg-moss">{webgl && <ErrorBoundary fallback={null}><Suspense fallback={null}><FundoCidade /></Suspense></ErrorBoundary>}</div>
       <div aria-hidden="true" className={`pointer-events-none fixed inset-0 z-1 bg-pearl/80 backdrop-blur-[2px] transition-opacity duration-700 dark:bg-moss/60 ${home ? "opacity-0" : "opacity-100"}`} />
       <div className="relative z-10 shrink-0"><Sidebar theme={theme} toggleTheme={toggleTheme} /></div>
-      <main className="pointer-events-none relative z-10 min-w-0 flex-1 p-4 pb-24 md:p-8 md:pb-8"><Outlet /></main>
+      <main className={`relative z-10 min-w-0 flex-1 p-4 pb-24 md:p-8 md:pb-8 ${home ? "pointer-events-none" : ""}`}><Outlet /></main>
       <BottomNav theme={theme} toggleTheme={toggleTheme} />
     </div>
   );

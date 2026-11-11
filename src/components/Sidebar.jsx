@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
-import {LayoutDashboard, CalendarCheck, ShieldAlert, CloudSun, ChevronLeft, ChevronRight, Sun, Moon,} from "lucide-react";
+import { LayoutDashboard, CalendarCheck, ShieldAlert, CloudSun, Lightbulb, MessageCircle, ChevronLeft, ChevronRight, Sun, Moon } from "lucide-react";
 
 const links = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
   { to: "/rotina", label: "Rotina", icon: CalendarCheck },
   { to: "/seguranca", label: "Segurança", icon: ShieldAlert },
   { to: "/mobilidade", label: "Mobilidade", icon: CloudSun },
+  { to: "/insights", label: "Insights", icon: Lightbulb },
+  { to: "/assistente", label: "Assistente", icon: MessageCircle },
 ];
 
 export default function Sidebar({ theme, toggleTheme }) {

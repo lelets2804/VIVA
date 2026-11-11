@@ -7,6 +7,7 @@ import ContatoCard from "../components/ContatoCard";
 import ContatoModal from "../components/ContatoModal";
 import BotaoSOS from "../components/BotaoSOS";
 import HistoricoAlertas from "../components/HistoricoAlertas";
+import TituloPagina from "../components/TituloPagina";
 
 export default function Seguranca() {
   const { contatos, carregando, erro, adicionar, editar, remover } = useContatos();
@@ -17,7 +18,7 @@ export default function Seguranca() {
 
   return (
     <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-5xl">
-      <header className="mb-6"><h1 className="text-4xl font-bold text-silver-metal md:text-5xl">Segurança</h1><p className="mt-2 opacity-80">Seus contatos de apoio e um alerta de demonstração.</p></header>
+      <header className="mb-6"><TituloPagina sub="Seus contatos de apoio e um alerta de demonstração.">Segurança</TituloPagina></header>
       <p role="note" className="mb-8 flex items-start gap-3 rounded-2xl border border-violet-glow/50 bg-violet-glow/10 p-4 text-sm"><Info size={20} className="mt-0.5 shrink-0" /><span><strong>Função demonstrativa.</strong> O botão SOS apenas registra um alerta neste site: ele não liga para emergência, não envia SMS e não avisa seus contatos. Em uma emergência real, ligue 192 (SAMU), 193 (Bombeiros) ou 190 (Polícia).</span></p>
       <div className="grid gap-8 md:grid-cols-2">
         <div className="flex flex-col gap-8">
