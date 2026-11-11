@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Plus } from "lucide-react";
-import useLembretes from "../hooks/useLembretes";
+import useCena from "../hooks/useCena";
 import useRajadas from "../hooks/useRajadas";
 import useReducedMotion from "../hooks/useReducedMotion";
 import LembreteCard from "../components/LembreteCard";
@@ -12,7 +12,7 @@ import RajadaParticulas from "../components/RajadaParticulas";
 const FILTROS = [{ id: "todos", nome: "Todos" }, { id: "pendentes", nome: "Pendentes" }, { id: "concluidos", nome: "Concluídos" }];
 
 export default function Rotina() {
-  const { lembretes, carregando, erro, adicionar, editar, alternar, remover, total, concluidos, progresso } = useLembretes();
+  const { lembretes, carregando, erro, adicionar, editar, alternar, remover, total, concluidos, progresso } = useCena().rotina;
   const { rajadas, disparar } = useRajadas();
   const calmo = useReducedMotion();
   const [filtro, setFiltro] = useState("todos");

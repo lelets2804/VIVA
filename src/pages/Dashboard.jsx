@@ -1,61 +1,76 @@
-import { lazy, Suspense, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { CalendarCheck, ShieldAlert, CloudSun } from "lucide-react";
+import { motion, useScroll, useSpring, useMotionValueEvent } from "framer-motion";
+import { CalendarCheck, ShieldAlert, CloudSun, ChevronsDown } from "lucide-react";
 import { getSaudacao, getDataExtensa } from "../utils/saudacao";
-import useLembretes from "../hooks/useLembretes";
-import ErrorBoundary from "../components/ErrorBoundary";
-import OrbFallback from "../components/OrbFallback";
+import useCena from "../hooks/useCena";
+import useContatos from "../hooks/useContatos";
+import useReducedMotion from "../hooks/useReducedMotion";
+import RevelarTexto from "../components/RevelarTexto";
+import SecaoModulo from "../components/SecaoModulo";
 
-const Orb3D = lazy(() => import("../components/Orb3D"));
-const temWebGL = () => { try { const c = document.createElement("canvas"); return Boolean(c.getContext("webgl2") || c.getContext("webgl")); } catch { return false; } };
-const webgl = temWebGL();
-const horaAgora = () => { const d = new Date(); return d.getHours() + d.getMinutes() / 60; };
 const formatar = (h) => `${String(Math.floor(h)).padStart(2, "0")}:${String(Math.round((h % 1) * 60)).padStart(2, "0")}`;
 const MODULOS = [
-  { id: "rotina", nome: "Rotina", desc: "Lembretes e tarefas do dia", to: "/rotina", icon: CalendarCheck },
-  { id: "seguranca", nome: "Segurança", desc: "Contatos de apoio e SOS demonstrativo", to: "/seguranca", icon: ShieldAlert },
-  { id: "mobilidade", nome: "Mobilidade", desc: "Clima e alertas para o seu trajeto", to: "/mobilidade", icon: CloudSun },
+  { id: "rotina", nome: "Rotina", desc: "Lembretes e tarefas do dia", longa: "Organize lembretes, remédios e compromissos. Cada lembrete concluído faz o farol da Rotina brilhar mais na cidade.", to: "/rotina", icon: CalendarCheck },
+  { id: "seguranca", nome: "Segurança", desc: "Contatos de apoio e SOS demonstrativo", longa: "Contatos de apoio sempre à mão e um botão SOS de demonstração, que registra o alerta sem ligar para ninguém.", to: "/seguranca", icon: ShieldAlert },
+  { id: "mobilidade", nome: "Mobilidade", desc: "Clima e alertas para o seu trajeto", longa: "Clima de verdade e avisos informativos para planejar o deslocamento. Eles ajudam a se preparar, mas não garantem a segurança de um trajeto.", to: "/mobilidade", icon: CloudSun },
 ];
+const PONTOS = [{ id: "inicio", rotulo: "Início" }, ...MODULOS.map((m) => ({ id: m.id, rotulo: m.nome }))];
 
 export default function Dashboard() {
-  const [foco, setFoco] = useState(null);
-  const [hora, setHora] = useState(horaAgora);
-  const { progresso, total, concluidos } = useLembretes();
-  const descricao = (m) => (m.id === "rotina" && total > 0 ? `${concluidos} de ${total} concluídos` : m.desc);
+  const { foco, setFoco, hora, setHora, horaAgora, scroll, rotina } = useCena();
+  const { contatos } = useContatos();
+  const calmo = useReducedMotion();
+  const [ativo, setAtivo] = useState(0);
+  const ultimo = useRef(-1);
+  const { scrollYProgress } = useScroll();
+  const suave = useSpring(scrollYProgress, { stiffness: 90, damping: 28, mass: 0.6 });
+
+  useEffect(() => { window.scrollTo(0, 0); scroll.current = 0; return () => { scroll.current = 0; setFoco(null); }; }, [scroll, setFoco]);
+  useMotionValueEvent(suave, "change", (v) => {
+    scroll.current = v;
+    const i = Math.round(v * 3);
+    if (i !== ultimo.current) { ultimo.current = i; setAtivo(i); setFoco(i === 0 ? null : MODULOS[i - 1].id); }
+  });
+
+  const estatistica = {
+    rotina: rotina.total > 0 ? `${rotina.concluidos} de ${rotina.total} lembretes concluídos` : "Crie seu primeiro lembrete",
+    seguranca: contatos.length > 0 ? `${contatos.length} ${contatos.length === 1 ? "contato de apoio" : "contatos de apoio"}` : "Cadastre um contato de apoio",
+    mobilidade: "Clima e avisos do seu deslocamento",
+  };
+
   return (
-    <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="relative h-[42rem] overflow-hidden rounded-3xl border border-silver/30 bg-moss">
-      <div className="absolute inset-0">
-        {webgl ? (
-          <ErrorBoundary fallback={<OrbFallback />}>
-            <Suspense fallback={null}><Orb3D foco={foco} aoFocar={setFoco} hora={hora} progresso={progresso} /></Suspense>
-          </ErrorBoundary>
-        ) : (
-          <OrbFallback />
-        )}
-      </div>
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 md:hidden" style={{ background: "linear-gradient(to bottom, rgba(15,26,23,0.88), rgba(15,26,23,0.35) 45%, rgba(15,26,23,0.55))" }} />
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 hidden md:block" style={{ background: "linear-gradient(to right, rgba(15,26,23,0.92), rgba(15,26,23,0.5) 38%, transparent 65%)" }} />
-      <div className="dark pointer-events-none relative z-10 flex h-full flex-col justify-between p-6 text-pearl md:max-w-md md:p-12">
-        <div>
+    <div>
+      <nav aria-label="Seções do Dashboard" className="pointer-events-auto fixed right-4 top-1/2 z-20 hidden -translate-y-1/2 flex-col gap-3 md:flex">
+        {PONTOS.map((p, i) => (
+          <button key={p.id} onClick={() => document.getElementById(p.id)?.scrollIntoView({ behavior: calmo ? "auto" : "smooth" })} aria-label={`Ir para ${p.rotulo}`} aria-current={ativo === i ? "true" : undefined} className="group flex items-center justify-end gap-3">
+            <span className="rounded-full bg-black/60 px-2 py-0.5 text-xs text-pearl opacity-0 transition group-hover:opacity-100 group-focus-visible:opacity-100">{p.rotulo}</span>
+            <span className={`block rounded-full border border-silver transition-all ${ativo === i ? "h-6 w-3 bg-sage" : "h-3 w-3 bg-black/30"}`} />
+          </button>
+        ))}
+      </nav>
+      <section id="inicio" className="flex min-h-screen items-center">
+        <div className="dark pointer-events-auto max-w-md rounded-3xl border border-white/15 bg-moss/75 p-6 text-pearl backdrop-blur-md md:p-10">
           <p className="text-sm capitalize opacity-70">{getDataExtensa()}</p>
-          <h1 className="text-5xl font-bold text-silver-metal md:text-7xl">{getSaudacao()}!</h1>
-          <p className="mt-3 opacity-80">Aqui está o resumo da sua rotina de hoje.</p>
-          <div className="pointer-events-auto mt-4 flex flex-wrap items-center gap-3 text-sm">
+          <h1 className="text-5xl font-bold md:text-7xl"><RevelarTexto className="text-silver-metal">{`${getSaudacao()}!`}</RevelarTexto></h1>
+          <p className="mt-3 opacity-85">Aqui está o resumo da sua rotina de hoje.</p>
+          <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
             <label htmlFor="hora-dia" className="whitespace-nowrap">Hora do dia: <strong>{formatar(hora)}</strong></label>
-            <input id="hora-dia" type="range" min="0" max="23.75" step="0.25" value={hora} onChange={(e) => setHora(Number(e.target.value))} className="w-32 accent-violet-glow" />
+            <input id="hora-dia" type="range" min="0" max="23.75" step="0.25" value={Math.min(hora, 23.75)} onChange={(e) => setHora(Number(e.target.value))} className="w-32 accent-violet-glow" />
             <button onClick={() => setHora(horaAgora())} className="rounded-lg border border-silver/50 px-2 py-1 hover:bg-sage/20">Agora</button>
           </div>
+          <nav aria-label="Módulos do VIVVA" className="mt-6 grid grid-cols-3 gap-2 md:grid-cols-1">
+            {MODULOS.map((m) => (
+              <Link key={m.id} to={m.to} onMouseEnter={() => setFoco(m.id)} onMouseLeave={() => setFoco(null)} onFocus={() => setFoco(m.id)} onBlur={() => setFoco(null)} className={`flex flex-col items-center gap-1 rounded-2xl border px-3 py-3 text-center transition focus-visible:outline-2 focus-visible:outline-violet-glow md:flex-row md:gap-3 md:px-4 md:text-left ${foco === m.id ? "border-sage bg-sage/25" : "border-white/20 bg-white/5"}`}>
+                <m.icon size={22} className="shrink-0 text-sage" />
+                <span className="flex flex-col"><span className="font-semibold">{m.nome}</span><span className="hidden text-sm opacity-70 md:block">{m.desc}</span></span>
+              </Link>
+            ))}
+          </nav>
+          <p className="mt-6 flex items-center gap-2 text-sm opacity-80"><motion.span aria-hidden="true" animate={calmo ? {} : { y: [0, 8, 0] }} transition={{ duration: 1.8, repeat: Infinity }}><ChevronsDown size={20} /></motion.span>Role para explorar a cidade</p>
         </div>
-        <nav aria-label="Módulos do VIVVA" className="grid grid-cols-3 gap-2 md:grid-cols-1 md:gap-3">
-          {MODULOS.map((m) => (
-            <Link key={m.id} to={m.to} onMouseEnter={() => setFoco(m.id)} onMouseLeave={() => setFoco(null)} onFocus={() => setFoco(m.id)} onBlur={() => setFoco(null)} className={`pointer-events-auto flex flex-col items-center gap-1 rounded-2xl border px-3 py-3 text-center backdrop-blur transition focus-visible:outline-2 focus-visible:outline-violet-glow md:flex-row md:gap-3 md:px-4 md:text-left ${foco === m.id ? "border-sage bg-sage/25" : "border-silver/40 bg-forest/50"}`}>
-              <m.icon size={22} className="shrink-0 text-sage" />
-              <span className="flex flex-col"><span className="font-semibold">{m.nome}</span><span className="hidden text-sm opacity-70 md:block">{descricao(m)}</span></span>
-            </Link>
-          ))}
-        </nav>
-      </div>
-    </motion.section>
+      </section>
+      {MODULOS.map((m, i) => <SecaoModulo key={m.id} id={m.id} indice={i + 1} titulo={m.nome} descricao={m.longa} estatistica={estatistica[m.id]} to={m.to} icon={m.icon} aoFocar={setFoco} />)}
+    </div>
   );
 }

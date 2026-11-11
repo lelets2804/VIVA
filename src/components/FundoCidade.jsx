@@ -1,10 +1,11 @@
-import { useRef, useState, useEffect, useLayoutEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRef, useEffect, useLayoutEffect, useMemo } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Sparkles } from "@react-three/drei";
 import { EffectComposer, Bloom, SMAA } from "@react-three/postprocessing";
 import { AdditiveBlending, DoubleSide, CatmullRomCurve3, Color, Object3D, Vector2, Vector3, MathUtils } from "three";
 import useReducedMotion from "../hooks/useReducedMotion";
+import useCena from "../hooks/useCena";
 
 const CHAO = -1.4;
 const NOS = [
@@ -29,11 +30,11 @@ void main(){
   vec3 vio = mix(vec3(0.62, 0.56, 0.95), vec3(0.50, 0.76, 0.60), smoothstep(0.0, 0.7, y));
   col = mix(col, vio * 0.8, ocaso * (1.0 - y) * 0.7);
   float solVis = smoothstep(-0.12, 0.08, alt);
-  vec2 sp = vec2(0.5 - cos(ang) * 0.36, 0.34 + alt * 0.38);
+  vec2 sp = vec2(0.5 - cos(ang) * 0.36, 0.64 + alt * 0.24);
   vec2 ds = vec2((vUv.x - sp.x) * uAspect, vUv.y - sp.y);
   float rs = length(ds);
   col += vec3(1.0, 0.97, 0.9) * ((1.0 - smoothstep(0.038, 0.045, rs)) * 1.7 + 0.012 / (rs * rs + 0.012) * 0.3) * solVis;
-  vec2 mp = vec2(0.5 + cos(ang) * 0.36, 0.34 - alt * 0.38);
+  vec2 mp = vec2(0.5 + cos(ang) * 0.36, 0.64 - alt * 0.24);
   vec2 dm = vec2((vUv.x - mp.x) * uAspect, vUv.y - mp.y);
   float rm = length(dm);
   col += vec3(0.80, 0.84, 1.0) * ((1.0 - smoothstep(0.026, 0.032, rm)) * 1.5 + 0.006 / (rm * rm + 0.01) * 0.3) * (1.0 - dia);
@@ -119,12 +120,33 @@ function gerarPredios() {
       if (rnd() < 0.22) continue;
       if (NOS.some((n) => Math.hypot(px - n.pos[0], pz - n.pos[2]) < 1.9)) continue;
       if (rota.some((r) => Math.hypot(px - r.x, pz - r.z) < 1.0)) continue;
+      if (NOS.some((n) => pz > n.pos[2] && Math.abs(px - (-1.4 + (n.pos[0] + 1.4) * (10 - pz) / (10 - n.pos[2]))) < 1.9)) continue;
       const frente = pz > 1.4;
       const altura = frente ? 0.35 + rnd() * 0.45 : 0.6 + rnd() * 1.9 + Math.max(0, -pz) * 0.12;
       lista.push({ x: px, z: pz, w: 0.55 + rnd() * 0.4, h: altura });
     }
   }
   return lista;
+}
+
+const suavizar = (t) => t * t * (3 - 2 * t);
+const misturar = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
+const deslocar = (e, dx) => ({ pos: [e.pos[0] + dx, e.pos[1], e.pos[2]], alvo: [e.alvo[0] + dx, e.alvo[1], e.alvo[2]] });
+const VISAO = { pos: [0, 3.3, 9.5], alvo: [0, 0.1, 0] };
+const ETAPAS = {
+  rotina: { pos: [-3.7, 0.5, 4.2], alvo: [-3.1, 0.2, 0.6] },
+  seguranca: { pos: [4.3, 0.4, 4.5], alvo: [3.3, 0.2, 0.9] },
+  mobilidade: { pos: [1.0, 1.9, 2.6], alvo: [0.4, 0.0, -3.0] },
+};
+const ROTEIRO = [VISAO, deslocar(ETAPAS.rotina, -1.1), deslocar(ETAPAS.seguranca, -1.1), deslocar(ETAPAS.mobilidade, -1.1)];
+const POR_ROTA = { "/rotina": ETAPAS.rotina, "/seguranca": ETAPAS.seguranca, "/mobilidade": ETAPAS.mobilidade };
+
+function alvoPorScroll(p) {
+  const n = ROTEIRO.length - 1;
+  const x = Math.min(Math.max(p, 0), 1) * n;
+  const i = Math.min(Math.floor(x), n - 1);
+  const t = suavizar(Math.min(Math.max((x - i - 0.25) / 0.5, 0), 1));
+  return { pos: misturar(ROTEIRO[i].pos, ROTEIRO[i + 1].pos, t), alvo: misturar(ROTEIRO[i].alvo, ROTEIRO[i + 1].alvo, t) };
 }
 
 function Ceu({ hora }) {
@@ -195,28 +217,37 @@ function Farol({ no, calmo, ativo, aoFocar, onSelect, progresso }) {
   );
 }
 
-function Camera({ calmo, saindo }) {
-  useFrame((state) => {
-    const alvoX = calmo ? 0 : state.pointer.x * 1.1;
-    const alvoY = 3.3 + (calmo ? 0 : state.pointer.y * 0.5);
-    const alvoZ = saindo ? 3.5 : 9.5;
-    state.camera.position.x += (alvoX - state.camera.position.x) * 0.04;
-    state.camera.position.y += (alvoY - state.camera.position.y) * 0.04;
-    state.camera.position.z += (alvoZ - state.camera.position.z) * 0.06;
-    state.camera.lookAt(0, 0.1, 0);
+function Camera({ calmo, escala, base, rota, scroll, pointer }) {
+  const atual = useRef(null);
+  const pd = useRef(new Vector3());
+  const ad = useRef(new Vector3());
+  useFrame((state, delta) => {
+    const e = rota === "/" ? alvoPorScroll(scroll.current) : POR_ROTA[rota] || VISAO;
+    const mundo = (p) => [base[0] + escala * p[0], base[1] + escala * p[1], base[2] + escala * p[2]];
+    const p = mundo(e.pos);
+    const a = mundo(e.alvo);
+    pd.current.set(p[0] + (calmo ? 0 : pointer.current.x * 0.5), p[1] + (calmo ? 0 : pointer.current.y * 0.25), p[2]);
+    ad.current.set(a[0], a[1], a[2]);
+    if (!atual.current) atual.current = { pos: pd.current.clone(), alvo: ad.current.clone() };
+    const k = calmo ? 1 : 1 - Math.exp(-2.4 * delta);
+    atual.current.pos.lerp(pd.current, k);
+    atual.current.alvo.lerp(ad.current, k);
+    state.camera.position.copy(atual.current.pos);
+    state.camera.lookAt(atual.current.alvo);
   });
   return null;
 }
 
-function Cena({ hora, calmo, foco, aoFocar, onSelect, saindo, progresso }) {
-  const { size, viewport } = useThree();
+function Cena({ hora, calmo, foco, aoFocar, onSelect, progresso, rota, scroll, pointer }) {
+  const { size } = useThree();
   const desktop = size.width / size.height > 1;
-  const escala = Math.min(1, viewport.width / (desktop ? 11 : 8));
-  const pos = desktop ? [viewport.width * 0.14, -0.2, 0] : [0, -0.4, 0];
+  const larguraRef = 2 * Math.tan((42 * Math.PI) / 360) * 9.5 * (size.width / size.height);
+  const escala = Math.min(1, larguraRef / (desktop ? 11 : 8));
+  const pos = desktop ? [larguraRef * 0.14, -0.2, 0] : [0, -0.4, 0];
   return (
     <>
       <Ceu hora={hora} />
-      <Camera calmo={calmo} saindo={saindo} />
+      <Camera calmo={calmo} escala={escala} base={pos} rota={rota} scroll={scroll} pointer={pointer} />
       <group position={pos} scale={escala}>
         <Cidade hora={hora} />
         <Chao foco={foco} calmo={calmo} progresso={progresso} />
@@ -232,17 +263,22 @@ function Cena({ hora, calmo, foco, aoFocar, onSelect, saindo, progresso }) {
   );
 }
 
-export default function Orb3D({ foco = null, aoFocar = () => {}, hora = 12, progresso = 0 }) {
+export default function FundoCidade() {
   const calmo = useReducedMotion();
   const navigate = useNavigate();
-  const [saindo, setSaindo] = useState(false);
-  const entrar = (to) => { if (saindo) return; setSaindo(true); setTimeout(() => navigate(to), calmo ? 0 : 650); };
+  const { pathname } = useLocation();
+  const { foco, setFoco, hora, scroll, rotina } = useCena();
+  const pointer = useRef({ x: 0, y: 0 });
+  useEffect(() => {
+    const mover = (e) => { pointer.current.x = (e.clientX / window.innerWidth) * 2 - 1; pointer.current.y = -((e.clientY / window.innerHeight) * 2 - 1); };
+    window.addEventListener("pointermove", mover);
+    return () => window.removeEventListener("pointermove", mover);
+  }, []);
   return (
-    <div aria-hidden="true" className="relative h-full w-full">
+    <div aria-hidden="true" className="h-full w-full">
       <Canvas camera={{ position: [0, 3.3, 9.5], fov: 42 }} dpr={[1, 1.5]} gl={{ antialias: false }}>
-        <Cena hora={hora} calmo={calmo} foco={foco} aoFocar={aoFocar} onSelect={entrar} saindo={saindo} progresso={progresso} />
+        <Cena hora={hora} calmo={calmo} foco={foco} aoFocar={setFoco} onSelect={navigate} progresso={rotina.progresso} rota={pathname} scroll={scroll} pointer={pointer} />
       </Canvas>
-      <div className={`pointer-events-none absolute inset-0 bg-black transition-opacity duration-700 ${saindo ? "opacity-100" : "opacity-0"}`} />
     </div>
   );
 }
