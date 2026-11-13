@@ -21,7 +21,7 @@ export default function Rotina() {
 
   const visiveis = lembretes.filter((l) => filtro === "todos" || (filtro === "pendentes" ? !l.concluido : l.concluido));
   const aoAlternar = (id, e) => { const l = lembretes.find((x) => x.id === id); if (l && !l.concluido && !calmo) { const r = e.currentTarget.getBoundingClientRect(); disparar(r.left + r.width / 2, r.top + r.height / 2); } alternar(id); };
-  const salvar = async (dados) => { if (modal?.id) await editar(modal.id, dados); else await adicionar(dados); setModal(null); };
+  const salvar = async (dados) => { const sucesso = modal?.id ? await editar(modal.id, dados) : await adicionar(dados); if (sucesso) setModal(null);};
 
   return (
     <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-5xl">
