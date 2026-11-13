@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { LayoutDashboard, CalendarCheck, ShieldAlert, CloudSun, Lightbulb, MessageCircle, ChevronLeft, ChevronRight, Sun, Moon } from "lucide-react";
 
 const links = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/", label: "Início", icon: LayoutDashboard },
   { to: "/rotina", label: "Rotina", icon: CalendarCheck },
   { to: "/seguranca", label: "Segurança", icon: ShieldAlert },
   { to: "/mobilidade", label: "Mobilidade", icon: CloudSun },

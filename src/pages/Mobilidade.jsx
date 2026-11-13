@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { RefreshCw, MapPin, Route, Waves, Car, Info, ExternalLink } from "lucide-react";
 import useClima from "../hooks/useClima";
@@ -39,14 +38,7 @@ export default function Mobilidade() {
         </div>
 
         <div className="overflow-hidden border-y border-silver/30">
-          <iframe
-            title="Mapa de trânsito de São Paulo"
-            src={mapaTransito}
-            className="h-120 w-full border-0 md:h-145"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            allowFullScreen
-          />
+          <iframe title="Mapa de trânsito de São Paulo" src={mapaTransito} className="h-120 w-full border-0 md:h-145" loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
         </div>
 
         <div className="flex items-start gap-3 p-5 md:p-6">
