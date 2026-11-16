@@ -1,5 +1,8 @@
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+// remove espaços, barras finais e um eventual "/rest/v1" colado na variável
+const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL || "")
+  .trim()
+  .replace(/\/rest\/v1\/?$/, "")
+  .replace(/\/+$/, "");
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 const TABELA = `${SUPABASE_URL}/rest/v1/lembretes`;

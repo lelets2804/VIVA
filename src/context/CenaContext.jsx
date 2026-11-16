@@ -1,7 +1,7 @@
-import { createContext, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import useLembretes from "../hooks/useLembretes";
+import { CenaContext } from "./cenaContextValue";
 
-export const CenaContext = createContext(null);
 const horaAgora = () => { const d = new Date(); return d.getHours() + d.getMinutes() / 60; };
 
 export function CenaProvider({ children }) {
