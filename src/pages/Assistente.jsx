@@ -1,8 +1,8 @@
-
 import { useMemo, useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import TituloPagina from "../components/TituloPagina";
-import { Bot, Send, UserRound, RotateCcw, ChevronRight } from "lucide-react";
+import useVoz from "../hooks/useVoz";
+import { Bot, Send, UserRound, RotateCcw, ChevronRight, Mic, Square, Volume2, VolumeX } from "lucide-react";
 
 const BASE_CONHECIMENTO = [
   { categoria: "Sobre o VIVVA", pergunta: "O que é o VIVVA?", palavras: ["vivva", "projeto", "plataforma", "aplicativo", "o que e"], resposta: "O VIVVA é uma plataforma de apoio à autonomia e ao bem-estar. Ele reúne recursos de rotina, segurança e mobilidade em um só lugar, com informações que ajudam no planejamento do dia a dia." },
@@ -20,6 +20,7 @@ const BASE_CONHECIMENTO = [
   { categoria: "Mobilidade", pergunta: "O VIVVA calcula o trânsito em tempo real?", palavras: ["transito", "trafego", "tempo real", "engarrafamento"], resposta: "O VIVVA direciona a consulta de rotas para serviços de navegação. Informações de trânsito em tempo real, incidentes e recálculo de rota são fornecidos pelo Google Maps ou Waze, não pelo VIVVA." },
   { categoria: "Mobilidade", pergunta: "Os avisos climáticos garantem que o trajeto é seguro?", palavras: ["trajeto seguro", "seguranca trajeto", "garante seguranca", "risco"], resposta: "Não. Os avisos são informativos e ajudam no planejamento, mas não garantem a segurança do percurso. Consulte fontes oficiais, observe as condições locais e siga as orientações das autoridades." },
   { categoria: "Acessibilidade", pergunta: "O VIVVA foi pensado para acessibilidade?", palavras: ["acessibilidade", "acessivel", "deficiencia", "inclusao"], resposta: "A proposta do VIVVA é facilitar o acesso a informações e ferramentas do cotidiano. A interface deve ser utilizada com recursos como navegação por teclado, contraste adequado, textos claros e identificação acessível dos controles. A revisão de acessibilidade continua sendo parte importante da evolução do projeto." },
+  { categoria: "Acessibilidade", pergunta: "Posso falar com o assistente por voz?", palavras: ["voz", "falar", "microfone", "audio", "ouvir", "ler em voz alta"], resposta: "Sim. Toque no botão do microfone, ao lado do campo de texto, e faça sua pergunta em voz alta. Se quiser ouvir as respostas, ative a opção \"Ler respostas\" no topo da conversa. Cada resposta também tem um botão \"Ouvir\". O reconhecimento de voz usa o recurso do próprio navegador e funciona no Google Chrome e no Microsoft Edge." },
   { categoria: "Privacidade", pergunta: "Meus dados ficam protegidos?", palavras: ["privacidade", "dados", "protegidos", "seguranca dos dados", "informacoes pessoais"], resposta: "Evite inserir informações sensíveis desnecessárias. A proteção efetiva dos dados depende da implementação, do armazenamento e das permissões configuradas no projeto. Consulte a equipe responsável para conhecer a política de dados desta versão." },
 ];
 
@@ -29,6 +30,7 @@ const SUGESTOES = [
   "O botão SOS chama a emergência?",
   "Como planejar um trajeto?",
   "Como consultar o clima?",
+  "Posso falar com o assistente por voz?",
   "Quais funcionalidades estão disponíveis?",
 ];
 
@@ -72,6 +74,7 @@ export default function Assistente() {
   ]);
 
   const areaMensagensRef = useRef(null);
+  const voz = useVoz({ aoReconhecer: (texto) => enviar(texto) });
 
   const categorias = ["Todas", ...new Set(BASE_CONHECIMENTO.map((item) => item.categoria))];
 
@@ -102,6 +105,7 @@ export default function Assistente() {
     ]);
 
     setMensagem("");
+    if (voz.lerRespostas) voz.falar(resposta);
   };
 
   const reiniciar = () => {
@@ -129,9 +133,14 @@ export default function Assistente() {
                 <p className="text-sm opacity-70">Respostas sobre o app, sem IA externa</p>
               </div>
             </div>
-            <button type="button" onClick={reiniciar} className="btn min-h-11 px-3 text-sm font-medium opacity-80 hover:bg-sage/20 hover:opacity-100">
-              <RotateCcw size={16} /> Reiniciar
-            </button>
+            <div className="flex flex-wrap items-center justify-end gap-1">
+              <button type="button" onClick={voz.alternarLeitura} aria-pressed={voz.lerRespostas} className={`btn min-h-11 px-3 text-sm font-medium ${voz.lerRespostas ? "bg-sage/25 text-forest dark:text-sage" : "opacity-80 hover:bg-sage/20 hover:opacity-100"}`}>
+                {voz.lerRespostas ? <Volume2 size={16} /> : <VolumeX size={16} />} {voz.lerRespostas ? "Leitura ligada" : "Ler respostas"}
+              </button>
+              <button type="button" onClick={reiniciar} className="btn min-h-11 px-3 text-sm font-medium opacity-80 hover:bg-sage/20 hover:opacity-100">
+                <RotateCcw size={16} /> Reiniciar
+              </button>
+            </div>
           </div>
 
           <div ref={areaMensagensRef} className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain p-4 md:p-6" aria-live="polite">
@@ -142,17 +151,31 @@ export default function Assistente() {
                 </span>
                 <div className={`max-w-[85%] wrap-break-word rounded-2xl px-4 py-3 leading-relaxed ${item.tipo === "usuario" ? "rounded-tr-md bg-forest text-pearl-light dark:bg-sage dark:text-moss" : "rounded-tl-md bg-moss/6 dark:bg-white/8"}`}>
                   {item.texto}
+                  {item.tipo === "assistente" && (
+                    <button type="button" onClick={() => voz.falar(item.texto)} aria-label="Ouvir esta resposta" className="mt-2 flex min-h-9 items-center gap-1.5 rounded-lg px-2 -ml-2 text-sm font-semibold opacity-75 transition hover:bg-sage/20 hover:opacity-100">
+                      <Volume2 size={15} /> Ouvir
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
           </div>
 
-          <form onSubmit={(e) => { e.preventDefault(); enviar(); }} className="flex shrink-0 gap-2 border-t border-moss/10 p-3 md:p-4 dark:border-white/10">
-            <input value={mensagem} onChange={(e) => setMensagem(e.target.value)} placeholder="Escreva sua dúvida..." aria-label="Digite sua pergunta" className="campo min-w-0 flex-1" />
-            <button type="submit" disabled={!mensagem.trim()} aria-label="Enviar pergunta" className="btn btn-primario min-h-12 w-12 shrink-0 px-0">
-              <Send size={19} />
-            </button>
-          </form>
+          <div className="shrink-0 border-t border-moss/10 p-3 md:p-4 dark:border-white/10">
+            <form onSubmit={(e) => { e.preventDefault(); enviar(); }} className="flex gap-2">
+              <input value={voz.ouvindo ? voz.parcial : mensagem} onChange={(e) => setMensagem(e.target.value)} readOnly={voz.ouvindo} placeholder={voz.ouvindo ? "Ouvindo… pode falar" : "Escreva ou fale sua dúvida..."} aria-label="Digite sua pergunta" className="campo min-w-0 flex-1" />
+              <button type="button" onClick={voz.alternarOuvir} aria-pressed={voz.ouvindo} aria-label={voz.ouvindo ? "Parar de ouvir" : "Falar a pergunta"} title={voz.ouvindo ? "Parar de ouvir" : "Falar a pergunta"} className={`btn relative min-h-12 w-12 shrink-0 px-0 ${voz.ouvindo ? "bg-coral-deep text-white" : "btn-secundario"}`}>
+                {voz.ouvindo && <span aria-hidden="true" className="absolute -inset-1 animate-pulse rounded-[1.05rem] border-2 border-coral motion-reduce:animate-none" />}
+                {voz.ouvindo ? <Square size={17} className="relative" /> : <Mic size={19} />}
+              </button>
+              <button type="submit" disabled={voz.ouvindo || !mensagem.trim()} aria-label="Enviar pergunta" className="btn btn-primario min-h-12 w-12 shrink-0 px-0">
+                <Send size={19} />
+              </button>
+            </form>
+            <p aria-live="polite" className="mt-2 min-h-5 text-sm">
+              {voz.erro ? <span className="text-coral-deep dark:text-[#ff9b94]">{voz.erro}</span> : voz.ouvindo ? <span className="opacity-75">Ouvindo… toque no quadrado para parar.</span> : voz.falando ? <button type="button" onClick={voz.pararFala} className="font-semibold underline underline-offset-2 opacity-80">Lendo a resposta… parar</button> : <span className="opacity-60">Toque no microfone para falar a sua pergunta.</span>}
+            </p>
+          </div>
         </div>
 
         <aside className="space-y-5">
