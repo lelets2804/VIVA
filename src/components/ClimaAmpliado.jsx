@@ -6,7 +6,7 @@ const hhmm = (iso) => iso?.slice(11, 16) ?? "—";
 
 function Item({ icone: Icone, rotulo, valor, detalhe, destaque }) {
   return (
-    <div className={`rounded-2xl border p-4 ${destaque ? "border-violet-glow/70 bg-violet-glow/15" : "border-silver/40 bg-pearl-light/70 dark:bg-forest/50"}`}>
+    <div className={`rounded-2xl border p-4 ${destaque ? "border-ambar/70 bg-ambar/15" : "border-silver/40 bg-pearl-light/70 dark:bg-forest/50"}`}>
       <p className="flex items-center gap-2 text-sm opacity-80"><Icone size={16} />{rotulo}</p>
       <p className="mt-1 text-xl font-semibold">{valor}</p>
       {detalhe && <p className="text-xs opacity-70">{detalhe}</p>}

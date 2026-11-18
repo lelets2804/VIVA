@@ -13,11 +13,13 @@ export default function Layout({ theme, toggleTheme }) {
   const home = pathname === "/";
   useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
   return (
-    <div className="relative flex min-h-screen text-moss transition-colors dark:text-pearl">
+    <div className="relative flex min-h-screen text-moss transition-colors dark:text-pearl-light">
+      <a href="#conteudo" className="sr-only z-100 rounded-xl bg-ambar px-4 py-3 font-semibold text-moss focus:not-sr-only focus:fixed focus:left-4 focus:top-4">Pular para o conteúdo</a>
       <div aria-hidden="true" className="fixed inset-0 z-0 bg-pearl dark:bg-moss">{webgl && <ErrorBoundary fallback={null}><Suspense fallback={null}><FundoCidade /></Suspense></ErrorBoundary>}</div>
-      <div aria-hidden="true" className={`pointer-events-none fixed inset-0 z-1 bg-pearl/80 backdrop-blur-[2px] transition-opacity duration-700 dark:bg-moss/60 ${home ? "opacity-0" : "opacity-100"}`} />
+      {/* Nas telas internas a cidade fica ao fundo, bem suave, para o conteúdo ser lido com conforto. */}
+      <div aria-hidden="true" className={`pointer-events-none fixed inset-0 z-1 bg-pearl-light/88 backdrop-blur-md transition-opacity duration-700 dark:bg-moss/82 ${home ? "opacity-0" : "opacity-100"}`} />
       <div className="relative z-10 shrink-0"><Sidebar theme={theme} toggleTheme={toggleTheme} /></div>
-      <main className={`relative z-10 min-w-0 flex-1 p-4 pb-24 md:p-8 md:pb-8 ${home ? "pointer-events-none" : ""}`}><Outlet /></main>
+      <main id="conteudo" tabIndex={-1} className={`relative z-10 min-w-0 flex-1 px-5 pt-8 pb-28 outline-none md:px-10 md:pt-12 md:pb-12 lg:px-14 ${home ? "pointer-events-none" : ""}`}><Outlet /></main>
       <BottomNav theme={theme} toggleTheme={toggleTheme} />
     </div>
   );

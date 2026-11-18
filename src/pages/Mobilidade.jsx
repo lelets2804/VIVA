@@ -6,6 +6,7 @@ import BuscaCidade from "../components/BuscaCidade";
 import CartaoClima from "../components/CartaoClima";
 import AvisoAmbiental from "../components/AvisoAmbiental";
 import PrevisaoDias from "../components/PrevisaoDias";
+import TituloPagina from "../components/TituloPagina";
 
 export default function Mobilidade() {
   const { cidade, dados, carregando, erro, trocarCidade, atualizar } = useClima();
@@ -16,25 +17,22 @@ export default function Mobilidade() {
 
   return (
     <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="pointer-events-auto mx-auto max-w-6xl">
-      <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-4xl font-bold text-silver-metal md:text-5xl">Mobilidade</h1>
-          <p className="mt-2 opacity-80">Acompanhe o trânsito, os pontos de alagamento e as condições climáticas da cidade de São Paulo.</p>
-        </div>
-        <button onClick={atualizar} disabled={carregando} className="flex items-center gap-2 rounded-xl border border-silver/60 px-4 py-2 hover:bg-sage/15 disabled:opacity-60">
+      <header className="mb-10 flex flex-wrap items-end justify-between gap-5">
+        <TituloPagina sobre="Módulo 03" sub="Trânsito, alagamentos e o clima de São Paulo antes de você sair de casa.">Mobilidade</TituloPagina>
+        <button onClick={atualizar} disabled={carregando} className="btn btn-secundario">
           <RefreshCw size={18} className={carregando ? "animate-spin" : ""} />
           Atualizar clima
         </button>
       </header>
 
-      <section className="mb-8 overflow-hidden rounded-3xl border border-silver/40 bg-white/70 shadow-lg backdrop-blur dark:bg-forest/65">
+      <section className="cartao mb-8 overflow-hidden">
         <div className="flex flex-wrap items-center gap-3 p-5 md:p-7">
-          <span className="rounded-2xl bg-sage/25 p-3 text-forest dark:text-sage"><Car size={25} /></span>
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sage/25 text-forest dark:text-sage"><Car size={25} /></span>
           <div>
-            <h2 className="text-xl font-semibold">Trânsito em São Paulo</h2>
+            <h2 className="text-2xl">Trânsito em São Paulo</h2>
             <p className="text-sm opacity-70">Mapa com informações de trânsito e opções de consulta de trajetos.</p>
           </div>
-          <span className="ml-auto rounded-full bg-sage/20 px-3 py-1 text-xs font-semibold text-forest dark:text-sage">São Paulo - SP</span>
+          <span className="etiqueta ml-auto">São Paulo - SP</span>
         </div>
 
         <div className="overflow-hidden border-y border-silver/30">
@@ -49,21 +47,21 @@ export default function Mobilidade() {
         </div>
       </section>
 
-      <section className="mb-8 overflow-hidden rounded-3xl border border-silver/40 bg-white/70 shadow-lg backdrop-blur dark:bg-forest/65">
+      <section className="cartao mb-8 overflow-hidden">
         <div className="flex flex-wrap items-center gap-3 p-5 md:p-7">
-          <span className="rounded-2xl bg-sage/25 p-3 text-forest dark:text-sage"><Waves size={25} /></span>
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sage/25 text-forest dark:text-sage"><Waves size={25} /></span>
           <div>
-            <h2 className="text-xl font-semibold">Alagamentos em São Paulo</h2>
+            <h2 className="text-2xl">Alagamentos em São Paulo</h2>
             <p className="text-sm opacity-70">Consulte os registros de pontos de alagamento monitorados pelo CGE.</p>
           </div>
-          <span className="ml-auto rounded-full bg-sage/20 px-3 py-1 text-xs font-semibold text-forest dark:text-sage">CGE - SP</span>
+          <span className="etiqueta ml-auto">CGE - SP</span>
         </div>
 
         <div className="overflow-hidden border-y border-silver/30 bg-white">
           <iframe
             title="Painel de alagamentos do CGE São Paulo"
             src={painelCGE}
-            className="md-h-700 w-full border-0 md:h-700"
+            className="h-120 w-full border-0 md:h-160"
             loading="lazy"
             referrerPolicy="strict-origin-when-cross-origin"
           />
@@ -73,19 +71,19 @@ export default function Mobilidade() {
           <Info size={19} className="mt-0.5 shrink-0 opacity-70" />
           <div className="text-sm leading-relaxed opacity-75">
             <p>As informações são disponibilizadas pelo Centro de Gerenciamento de Emergências da Prefeitura de São Paulo. A exibição dentro do VIVVA depende das permissões de incorporação do próprio CGE.</p>
-            <a href="https://www.cgesp.org/v3/alagamentos.jsp" target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-2 font-semibold underline">
+            <a href="https://www.cgesp.org/v3/alagamentos.jsp" target="_blank" rel="noreferrer" className="btn btn-secundario mt-4">
               Acessar painel oficial do CGE <ExternalLink size={14} />
             </a>
-            <p className="mt-2 text-xs opacity-70">Se o painel não carregar acima, o site de origem pode estar bloqueando a exibição incorporada. Nesse caso, utilize o acesso oficial.</p>
+            <p className="mt-3 text-sm opacity-70">Se o painel não carregar acima, o site de origem pode estar bloqueando a exibição incorporada. Nesse caso, utilize o acesso oficial.</p>
           </div>
         </div>
       </section>
 
-      <section className="mb-6 rounded-3xl border border-silver/40 bg-white/70 p-5 shadow-lg backdrop-blur dark:bg-forest/65 md:p-7">
+      <section className="cartao mb-8 p-5 md:p-7">
         <div className="mb-5 flex items-center gap-3">
-          <span className="rounded-2xl bg-sage/25 p-3 text-forest dark:text-sage"><MapPin size={24} /></span>
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sage/25 text-forest dark:text-sage"><MapPin size={24} /></span>
           <div>
-            <h2 className="text-xl font-semibold">Condições do tempo</h2>
+            <h2 className="text-2xl">Condições do tempo</h2>
             <p className="text-sm opacity-70">Consulte as condições climáticas que podem afetar os deslocamentos.</p>
           </div>
         </div>
@@ -94,7 +92,7 @@ export default function Mobilidade() {
         </div>
       </section>
 
-      {erro && <p role="alert" className="mb-6 rounded-xl border border-red-400/60 bg-red-500/10 p-4 text-sm">{erro}</p>}
+      {erro && <p role="alert" className="nota-erro mb-6">{erro}</p>}
       {carregando && !dados && <p aria-live="polite" className="opacity-70">Consultando o clima…</p>}
 
       {dados && (
@@ -102,18 +100,18 @@ export default function Mobilidade() {
           <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr]">
             <CartaoClima cidade={cidade} atual={dados.current} />
             <div>
-              <h2 className="mb-3 text-xl font-semibold">Avisos para o seu deslocamento</h2>
+              <h2 className="mb-4 text-2xl">Avisos para o seu deslocamento</h2>
               <ul className="flex flex-col gap-3">
                 {avisos.map((a, i) => <AvisoAmbiental key={a.id} aviso={a} indice={i} />)}
               </ul>
             </div>
           </div>
-          <h2 className="mb-3 mt-10 text-xl font-semibold">Previsão para os próximos dias</h2>
+          <h2 className="mb-4 mt-12 text-2xl">Previsão para os próximos dias</h2>
           <PrevisaoDias diario={dados.daily} />
         </>
       )}
 
-      <p className="mt-10 text-xs opacity-70">
+      <p className="mt-12 text-sm opacity-70">
         Dados meteorológicos de <a href="https://open-meteo.com/" className="underline" target="_blank" rel="noreferrer">Open-Meteo.com</a>. O trânsito é fornecido pelo Waze e os dados de alagamento pelo CGE. A disponibilidade e atualização das informações dependem dos serviços de origem.
       </p>
     </motion.section>

@@ -11,7 +11,7 @@ const CHAO = -1.4;
 const NOS = [
   { id: "rotina", to: "/rotina", cor: "#8FD6A4", pos: [-3.1, CHAO, 0.6] },
   { id: "mobilidade", to: "/mobilidade", cor: "#C0C7CE", pos: [0.4, CHAO, -3.0] },
-  { id: "seguranca", to: "/seguranca", cor: "#7C6CFF", pos: [3.3, CHAO, 0.9] },
+  { id: "seguranca", to: "/seguranca", cor: "#F26D5B", pos: [3.3, CHAO, 0.9] },
 ];
 const PONTOS_ROTA = [[-3.1, -1.2, 0.6], [-1.6, -0.2, -1.9], [0.4, -1.2, -3.0], [2.4, -0.3, -1.2], [3.3, -1.2, 0.9], [0.2, -0.4, 2.2]];
 
@@ -24,10 +24,10 @@ void main(){
   float dia = smoothstep(-0.2, 0.4, alt);
   float ocaso = 1.0 - smoothstep(0.0, 0.5, abs(alt + 0.05));
   float y = vUv.y;
-  vec3 noite = mix(vec3(0.03, 0.06, 0.06), vec3(0.07, 0.06, 0.20), y);
+  vec3 noite = mix(vec3(0.03, 0.06, 0.06), vec3(0.04, 0.10, 0.13), y);
   vec3 claro = mix(vec3(0.46, 0.78, 0.72), vec3(0.20, 0.45, 0.55), y);
   vec3 col = mix(noite, claro, dia);
-  vec3 vio = mix(vec3(0.62, 0.56, 0.95), vec3(0.50, 0.76, 0.60), smoothstep(0.0, 0.7, y));
+  vec3 vio = mix(vec3(0.98, 0.62, 0.36), vec3(0.50, 0.76, 0.60), smoothstep(0.0, 0.7, y));
   col = mix(col, vio * 0.8, ocaso * (1.0 - y) * 0.7);
   float solVis = smoothstep(-0.12, 0.08, alt);
   vec2 sp = vec2(0.5 - cos(ang) * 0.36, 0.64 + alt * 0.24);
@@ -50,7 +50,7 @@ void main(){
   vec2 f = abs(fract(vW * 0.8) - 0.5);
   float linha = smoothstep(0.455, 0.5, max(f.x, f.y));
   float fade = 1.0 - smoothstep(1.5, 15.0, length(vW - vec2(0.0, -1.0)));
-  vec3 base = mix(vec3(0.56, 0.84, 0.64), vec3(0.49, 0.42, 1.0), smoothstep(-6.0, 6.0, vW.x));
+  vec3 base = mix(vec3(0.56, 0.84, 0.64), vec3(0.95, 0.72, 0.29), smoothstep(-6.0, 6.0, vW.x));
   vec3 acc = base * linha * 0.25 * fade;
   for (int i = 0; i < 3; i++) {
     float d = distance(vW, uNos[i]);
@@ -68,7 +68,7 @@ const ROTA_FRAG = `varying vec2 vUv; uniform float uTime;
 void main(){
   float p = fract(vUv.x * 3.0 - uTime * 0.12);
   float cometa = exp(-p * 7.0);
-  vec3 c = mix(vec3(0.56, 0.84, 0.64), vec3(0.49, 0.42, 1.0), 0.5 + 0.5 * sin(vUv.x * 9.42478));
+  vec3 c = mix(vec3(0.56, 0.84, 0.64), vec3(0.95, 0.72, 0.29), 0.5 + 0.5 * sin(vUv.x * 9.42478));
   gl_FragColor = vec4(c * (0.35 + cometa * 2.2), 1.0);
 }`;
 
@@ -101,7 +101,7 @@ void main(){
   vec2 f = fract(cel);
   float janela = step(0.22, f.x) * (1.0 - step(0.78, f.x)) * step(0.3, f.y) * (1.0 - step(0.7, f.y)) * (1.0 - step(0.5, abs(vN.y)));
   float acesa = step(0.5, rnd(floor(cel) + vId * 40.0));
-  vec3 luz = mix(vec3(0.56, 0.84, 0.64), vec3(0.62, 0.56, 1.0), rnd(floor(cel) + vId * 9.0));
+  vec3 luz = mix(vec3(0.56, 0.84, 0.64), vec3(1.0, 0.80, 0.48), rnd(floor(cel) + vId * 9.0));
   col += luz * janela * acesa * (0.18 + 0.9 * uNoite);
   col = mix(col, vec3(0.55, 0.62, 0.68) * (0.45 + 0.5 * dia), step(0.5, vN.y) * 0.9);
   gl_FragColor = vec4(col, 1.0);

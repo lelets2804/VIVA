@@ -10,17 +10,19 @@ const links = [
   { to: "/assistente", label: "Assistente", icon: MessageCircle },
 ];
 
+const base = "flex min-h-14 min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-0 text-[0.65rem] leading-none tracking-[-0.01em] transition-colors";
+
 export default function BottomNav({ theme, toggleTheme }) {
   return (
-    <nav aria-label="Navegação principal" className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-around border-t border-silver/40 bg-pearl-light/90 p-2 backdrop-blur md:hidden dark:bg-forest/90">
+    <nav aria-label="Navegação principal" className="fixed inset-x-0 bottom-0 z-50 flex items-stretch gap-0.5 border-t border-moss/10 bg-pearl-light/95 px-1.5 pt-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] backdrop-blur-xl md:hidden dark:border-white/10 dark:bg-moss/95">
       {links.map(({ to, label, icon: Icon }) => (
-        <NavLink key={to} to={to} end={to === "/"} className={({ isActive }) => `flex flex-col items-center gap-1 rounded-xl px-2 py-2 text-[10px] ${isActive ? "bg-sage/40 font-semibold" : ""}`}>
-          <Icon size={22} />
-          <span>{label}</span>
+        <NavLink key={to} to={to} end={to === "/"} className={({ isActive }) => `${base} ${isActive ? "bg-forest font-semibold text-pearl-light dark:bg-sage dark:text-moss" : "opacity-80"}`}>
+          <Icon size={21} aria-hidden="true" />
+          <span className="whitespace-nowrap">{label}</span>
         </NavLink>
       ))}
-      <button onClick={toggleTheme} aria-label="Alternar tema claro e escuro" className="flex flex-col items-center gap-1 rounded-xl px-2 py-2 text-[10px]">
-        {theme === "dark" ? <Sun size={22} /> : <Moon size={22} />}
+      <button onClick={toggleTheme} aria-label={theme === "dark" ? "Mudar para o tema claro" : "Mudar para o tema escuro"} className={`${base} opacity-80`}>
+        {theme === "dark" ? <Sun size={21} aria-hidden="true" /> : <Moon size={21} aria-hidden="true" />}
         <span>Tema</span>
       </button>
     </nav>

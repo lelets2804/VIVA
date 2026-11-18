@@ -25,21 +25,21 @@ export default function Rotina() {
 
   return (
     <motion.section initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-5xl">
-      <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
-        <TituloPagina sub="Seus lembretes e tarefas do dia.">Rotina</TituloPagina>
-        <button onClick={() => setModal({})} className="flex items-center gap-2 rounded-xl bg-sage px-5 py-3 font-semibold text-moss transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-violet-glow"><Plus size={20} />Novo lembrete</button>
+      <header className="mb-10 flex flex-wrap items-end justify-between gap-5">
+        <TituloPagina sobre="Módulo 01" sub="Seus lembretes e tarefas do dia, do remédio da manhã à consulta da tarde.">Rotina</TituloPagina>
+        <button onClick={() => setModal({})} className="btn btn-primario"><Plus size={20} />Novo lembrete</button>
       </header>
-      <div className="grid gap-8 md:grid-cols-[auto_1fr]">
-        <aside className="flex flex-col items-center gap-4 self-start rounded-3xl border border-silver/40 bg-pearl-light/70 p-6 backdrop-blur dark:bg-forest/50">
+      <div className="grid gap-6 md:grid-cols-[15rem_1fr] md:gap-8">
+        <aside className="cartao flex flex-row items-center gap-5 self-start p-5 md:flex-col md:p-6">
           <ProgressRing valor={progresso} />
-          <p className="text-center text-sm opacity-80">{concluidos} de {total} concluídos</p>
+          <div className="md:text-center"><p className="font-semibold">Progresso de hoje</p><p className="text-sm opacity-75">{concluidos} de {total} concluídos</p></div>
         </aside>
         <div>
           <div role="group" aria-label="Filtrar lembretes" className="mb-4 flex flex-wrap gap-2">
-            {FILTROS.map((f) => <button key={f.id} onClick={() => setFiltro(f.id)} aria-pressed={filtro === f.id} className={`rounded-full border px-4 py-2 text-sm transition ${filtro === f.id ? "border-sage bg-sage/30 font-semibold" : "border-silver/40 hover:bg-sage/15"}`}>{f.nome}</button>)}
+            {FILTROS.map((f) => <button key={f.id} onClick={() => setFiltro(f.id)} aria-pressed={filtro === f.id} className="chip">{f.nome}</button>)}
           </div>
-          {erro && <p role="alert" className="mb-4 rounded-xl border border-red-400/60 bg-red-500/10 p-3 text-sm">{erro}</p>}
-          {carregando ? <p className="opacity-70">Carregando…</p> : visiveis.length === 0 ? <p className="rounded-2xl border border-dashed border-silver/50 p-8 text-center opacity-70">{total === 0 ? "Nenhum lembrete ainda. Crie o primeiro em “Novo lembrete”." : "Nenhum lembrete neste filtro."}</p> : (
+          {erro && <p role="alert" className="nota-erro mb-4">{erro}</p>}
+          {carregando ? <p className="opacity-70">Carregando…</p> : visiveis.length === 0 ? <p className="vazio">{total === 0 ? "Nenhum lembrete ainda. Crie o primeiro em “Novo lembrete”." : "Nenhum lembrete neste filtro."}</p> : (
             <ul className="flex flex-col gap-3"><AnimatePresence>{visiveis.map((l) => <LembreteCard key={l.id} lembrete={l} aoAlternar={aoAlternar} aoEditar={setModal} aoExcluir={remover} />)}</AnimatePresence></ul>
           )}
         </div>

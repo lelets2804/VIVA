@@ -11,7 +11,7 @@ export default function RastreadorTrajeto({ trajeto }) {
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
         <h2 className="flex items-center gap-2 text-xl font-semibold"><Route size={22} />Acompanhar trajeto</h2>
         {gravando
-          ? <button onClick={parar} className="flex items-center gap-2 rounded-xl bg-violet-glow px-5 py-3 font-semibold text-white hover:brightness-110"><Square size={18} />Encerrar trajeto</button>
+          ? <button onClick={parar} className="btn btn-perigo"><Square size={18} />Encerrar trajeto</button>
           : <button onClick={iniciar} className="flex items-center gap-2 rounded-xl bg-sage px-5 py-3 font-semibold text-moss hover:brightness-110"><Play size={18} />Iniciar trajeto</button>}
       </div>
       {erro && <p role="alert" className="mb-3 rounded-xl border border-red-400/60 bg-red-500/10 p-3 text-sm">{erro}</p>}

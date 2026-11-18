@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 
-const CORES = ["#8FD6A4", "#7C6CFF", "#E6EAED", "#9AEAD5"];
+const CORES = ["#8FD6A4", "#F2B84B", "#E6EAED", "#9AEAD5"];
 
 export default function useRajadas() {
   const [rajadas, setRajadas] = useState([]);

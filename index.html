@@ -1,10 +1,22 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VIVVA</title>
+    <title>VIVVA · Rotina, segurança e mobilidade em São Paulo</title>
+    <meta name="description" content="VIVVA reúne lembretes de rotina, contatos de apoio e o clima de São Paulo em um só lugar, para quem quer manter a autonomia no dia a dia." />
+    <meta name="theme-color" content="#0F1A17" />
+    <meta property="og:title" content="VIVVA · Rotina, segurança e mobilidade" />
+    <meta property="og:description" content="Lembretes, contatos de apoio e clima de São Paulo em um só lugar." />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400..700&family=Funnel+Sans:wght@400..600&display=swap" rel="stylesheet" />
+    <script>
+      // Aplica o tema salvo antes da primeira pintura, para a tela não piscar.
+      try { var t = localStorage.getItem("vivva-theme") || localStorage.getItem("viva-theme") || "dark"; document.documentElement.classList.toggle("dark", t === "dark"); } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -1,7 +1,8 @@
 
 import { useMemo, useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Bot, Send, Sparkles, UserRound, RotateCcw, ChevronRight } from "lucide-react";
+import TituloPagina from "../components/TituloPagina";
+import { Bot, Send, UserRound, RotateCcw, ChevronRight } from "lucide-react";
 
 const BASE_CONHECIMENTO = [
   { categoria: "Sobre o VIVVA", pergunta: "O que é o VIVVA?", palavras: ["vivva", "projeto", "plataforma", "aplicativo", "o que e"], resposta: "O VIVVA é uma plataforma de apoio à autonomia e ao bem-estar. Ele reúne recursos de rotina, segurança e mobilidade em um só lugar, com informações que ajudam no planejamento do dia a dia." },
@@ -114,25 +115,21 @@ export default function Assistente() {
 
   return (
     <motion.section initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} className="pointer-events-auto mx-auto max-w-6xl">
-      <header className="mb-6">
-        <p className="mb-2 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-forest dark:text-sage">
-          <Sparkles size={16} /> Central de ajuda
-        </p>
-        <h1 className="text-4xl font-bold text-silver-metal md:text-5xl">Assistente virtual</h1>
-        <p className="mt-2 max-w-2xl opacity-75">Tire dúvidas sobre os recursos do VIVVA e encontre orientações para usar cada módulo.</p>
+      <header className="mb-10">
+        <TituloPagina sobre="Central de ajuda" sub="Tire dúvidas sobre os recursos do VIVVA e veja como usar cada módulo.">Assistente</TituloPagina>
       </header>
 
       <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1.5fr)_minmax(260px,0.8fr)]">
-        <div className="flex h-[min(680px,calc(100dvh-220px))] min-h-105 flex-col overflow-hidden rounded-3xl border border-silver/40 bg-white/70 shadow-xl backdrop-blur dark:bg-forest/65">
+        <div className="cartao flex h-[min(680px,calc(100dvh-220px))] min-h-105 flex-col overflow-hidden">
           <div className="flex shrink-0 items-center justify-between border-b border-silver/30 p-4">
             <div className="flex items-center gap-3">
-              <span className="rounded-2xl bg-sage/30 p-3 text-forest dark:text-sage"><Bot size={23} /></span>
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-forest text-pearl-light dark:bg-sage dark:text-moss"><Bot size={22} /></span>
               <div>
-                <h2 className="font-semibold">VIVVA Assist</h2>
-                <p className="text-xs opacity-65">Assistente de informações</p>
+                <h2 className="text-xl">VIVVA Assist</h2>
+                <p className="text-sm opacity-70">Respostas sobre o app, sem IA externa</p>
               </div>
             </div>
-            <button type="button" onClick={reiniciar} className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm opacity-70 transition hover:bg-sage/20 hover:opacity-100">
+            <button type="button" onClick={reiniciar} className="btn min-h-11 px-3 text-sm font-medium opacity-80 hover:bg-sage/20 hover:opacity-100">
               <RotateCcw size={16} /> Reiniciar
             </button>
           </div>
@@ -140,55 +137,55 @@ export default function Assistente() {
           <div ref={areaMensagensRef} className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain p-4 md:p-6" aria-live="polite">
             {conversa.map((item, indice) => (
               <div key={`${indice}-${item.tipo}`} className={`flex gap-3 ${item.tipo === "usuario" ? "flex-row-reverse" : ""}`}>
-                <span className={`h-fit shrink-0 rounded-xl p-2 ${item.tipo === "usuario" ? "bg-violet-500/15 text-violet-700 dark:text-violet-200" : "bg-sage/30 text-forest dark:text-sage"}`}>
+                <span className={`h-fit shrink-0 rounded-xl p-2 ${item.tipo === "usuario" ? "bg-ambar/25 text-ambar-deep dark:text-ambar" : "bg-sage/25 text-forest dark:text-sage"}`}>
                   {item.tipo === "usuario" ? <UserRound size={18} /> : <Bot size={18} />}
                 </span>
-                <div className={`max-w-[85%] wrap-break-word rounded-2xl px-4 py-3 text-sm leading-relaxed ${item.tipo === "usuario" ? "bg-violet-600 text-white" : "bg-black/5 dark:bg-white/10"}`}>
-                  {item.texto} 
+                <div className={`max-w-[85%] wrap-break-word rounded-2xl px-4 py-3 leading-relaxed ${item.tipo === "usuario" ? "rounded-tr-md bg-forest text-pearl-light dark:bg-sage dark:text-moss" : "rounded-tl-md bg-moss/6 dark:bg-white/8"}`}>
+                  {item.texto}
                 </div>
               </div>
             ))}
           </div>
 
-          <form onSubmit={(e) => { e.preventDefault(); enviar(); }} className="flex shrink-0 gap-2 border-t border-silver/30 bg-white/50 p-4 dark:bg-forest/80">
-            <input value={mensagem} onChange={(e) => setMensagem(e.target.value)} placeholder="Escreva sua dúvida..." aria-label="Digite sua pergunta" className="min-w-0 flex-1 rounded-xl border border-silver/50 bg-white/80 px-4 py-3 text-sm outline-none transition focus:border-violet-500 dark:bg-moss/60" />
-            <button type="submit" disabled={!mensagem.trim()} aria-label="Enviar pergunta" className="rounded-xl bg-forest px-4 text-white transition hover:bg-forest/85 disabled:cursor-not-allowed disabled:opacity-40 dark:bg-sage dark:text-moss">
+          <form onSubmit={(e) => { e.preventDefault(); enviar(); }} className="flex shrink-0 gap-2 border-t border-moss/10 p-3 md:p-4 dark:border-white/10">
+            <input value={mensagem} onChange={(e) => setMensagem(e.target.value)} placeholder="Escreva sua dúvida..." aria-label="Digite sua pergunta" className="campo min-w-0 flex-1" />
+            <button type="submit" disabled={!mensagem.trim()} aria-label="Enviar pergunta" className="btn btn-primario min-h-12 w-12 shrink-0 px-0">
               <Send size={19} />
             </button>
           </form>
         </div>
 
         <aside className="space-y-5">
-          <div className="rounded-3xl border border-silver/40 bg-white/70 p-5 backdrop-blur dark:bg-forest/65">
-            <h2 className="mb-3 text-lg font-semibold">Perguntas sugeridas</h2>
+          <div className="cartao p-5">
+            <h2 className="mb-4 text-xl">Perguntas sugeridas</h2>
             <div className="flex flex-col gap-2">
               {SUGESTOES.map((item) => (
-                <button key={item} type="button" onClick={() => enviar(item)} className="flex items-center justify-between gap-2 rounded-xl border border-silver/30 p-3 text-left text-sm transition hover:border-sage hover:bg-sage/15">
+                <button key={item} type="button" onClick={() => enviar(item)} className="flex min-h-11 items-center justify-between gap-2 rounded-xl border border-moss/10 p-3 text-left text-[0.9375rem] transition hover:border-sage hover:bg-sage/15 dark:border-white/10">
                   {item}<ChevronRight size={16} className="shrink-0 opacity-60" />
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="rounded-3xl border border-silver/40 bg-white/70 p-5 backdrop-blur dark:bg-forest/65">
-            <h2 className="mb-3 text-lg font-semibold">Explorar por assunto</h2>
+          <div className="cartao p-5">
+            <h2 className="mb-4 text-xl">Explorar por assunto</h2>
             <div className="mb-4 flex flex-wrap gap-2">
               {categorias.map((item) => (
-                <button key={item} type="button" onClick={() => setCategoria(item)} className={`rounded-full border px-3 py-1.5 text-xs transition ${categoria === item ? "border-forest bg-forest text-white dark:border-sage dark:bg-sage dark:text-moss" : "border-silver/50 hover:bg-sage/20"}`}>
+                <button key={item} type="button" onClick={() => setCategoria(item)} aria-pressed={categoria === item} className="chip min-h-9 px-3 py-1 text-sm">
                   {item}
                 </button>
               ))}
             </div>
             <div className="max-h-64 space-y-2 overflow-y-auto pr-1">
               {perguntas.map((item) => (
-                <button key={item.pergunta} type="button" onClick={() => enviar(item.pergunta)} className="block w-full rounded-xl bg-black/5 p-3 text-left text-sm transition hover:bg-sage/20 dark:bg-white/5">
+                <button key={item.pergunta} type="button" onClick={() => enviar(item.pergunta)} className="block min-h-11 w-full rounded-xl bg-moss/5 p-3 text-left text-[0.9375rem] transition hover:bg-sage/20 dark:bg-white/5">
                   {item.pergunta}
                 </button>
               ))}
             </div>
           </div>
 
-          <p className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-xs leading-relaxed opacity-80">
+          <p className="nota-atencao text-sm leading-relaxed">
             Esta versão utiliza uma base local de perguntas e respostas. Ela não é uma IA generativa e não substitui orientações de emergência ou informações oficiais.
           </p>
         </aside>
